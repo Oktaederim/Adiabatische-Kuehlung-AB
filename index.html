@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rechner für Adiabate Kühlung & WRG</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="container">
+    <header>
+        <h1>💧 Rechner für Adiabate Kühlung & WRG</h1>
+        <p class="subtitle">Analyse der Kälteerzeugung aus Abluft</p>
+    </header>
+
+    <main>
+        <div class="card">
+            <div class="card-header">
+                <h2>Anlagenkonfiguration</h2>
+                <button id="resetBtn" title="Alle Werte auf Standard zurücksetzen">⟲ Reset</button>
+            </div>
+            <div class="grid-container config-grid">
+                <div>
+                    <h4>🏭 Abluft (Eintritt)</h4>
+                    <div class="input-group">
+                        <label for="tempAbluft">Temperatur (°C)</label>
+                        <input type="number" id="tempAbluft" value="26.0" step="0.1">
+                    </div>
+                    <div class="input-group">
+                        <label for="rhAbluft">Relative Feuchte (%)</label>
+                        <input type="number" id="rhAbluft" value="50.0" step="0.1" min="0" max="100">
+                    </div>
+                </div>
+
+                <div>
+                    <h4>☀️ Zuluft (Eintritt)</h4>
+                    <div class="input-group">
+                        <label for="tempZuluft">Temperatur (°C)</label>
+                        <input type="number" id="tempZuluft" value="32.0" step="0.1">
+                    </div>
+                    <div class="input-group">
+                        <label for="rhZuluft">Relative Feuchte (%)</label>
+                        <input type="number" id="rhZuluft" value="40.0" step="0.1" min="0" max="100">
+                    </div>
+                </div>
+
+                <div>
+                    <h4>🔧 Systemparameter</h4>
+                    <div class="input-group">
+                        <label for="volumenstrom">Luft-Volumenstrom (m³/h)</label>
+                        <input type="number" id="volumenstrom" value="10000" step="100" min="0">
+                    </div>
+                    <div class="input-group">
+                        <label for="druck">Luftdruck (hPa)</label>
+                        <input type="number" id="druck" value="1013.25" step="0.1">
+                    </div>
+                </div>
+            </div>
+            <hr>
+            <div class="grid-container efficiency-grid">
+                 <div>
+                    <h4>Befeuchter-Wirkungsgrad (%)</h4>
+                    <input type="range" id="etaBefeuchter" min="50" max="100" value="90" step="1">
+                    <div class="range-value"><span id="etaBefeuchterValue">90</span> %</div>
+                 </div>
+                <div>
+                    <h4>WRG-Wirkungsgrad (%)</h4>
+                    <input type="range" id="etaWRG" min="40" max="85" value="65" step="1">
+                    <div class="range-value"><span id="etaWRGValue">65</span> %</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card" id="results-card">
+            <h2>Prozessvisualisierung & Ergebnisse</h2>
+            
+            <div class="summary-results">
+                <div>
+                    <p>Erzeugte Kälteleistung</p>
+                    <strong id="summary-power">-- kW</strong>
+                </div>
+                <div>
+                    <p>Wasserverbrauch (Adiabatik)</p>
+                    <strong id="summary-water">-- l/h</strong>
+                </div>
+                <div>
+                    <p>Zuluft-Abkühlung</p>
+                    <strong id="summary-zuluft-delta-t">-- °C → -- °C</strong>
+                </div>
+            </div>
+            <hr>
+
+            <div class="process-grid">
+                <div class="stream-label zuluft-label">ZULUFT</div>
+                <div class="state-node" id="node-zu-in"><h4>Eintritt</h4><p>T: <span id="res-t-zu-in">--</span>°C</p><p>rH: <span id="res-rh-zu-in">--</span>%</p><p>x: <span id="res-x-zu-in">--</span>g/kg</p><p>h: <span id="res-h-zu-in">--</span>kJ/kg</p></div>
+                <div class="arrow">→</div>
+                <div class="component-node" id="comp-wrg-zu"><h5>WRG</h5><p>Kälteleistung</p><p><strong id="res-p-wrg">-- kW</strong></p></div>
+                <div class="arrow">→</div>
+                <div class="state-node final-state" id="node-zu-out"><h4>Austritt</h4><p>T: <span id="res-t-zu-out">--</span>°C</p><p>rH: <span id="res-rh-zu-out">--</span>%</p><p>x: <span id="res-x-zu-out">--</span>g/kg</p><p>h: <span id="res-h-zu-out">--</span>kJ/kg</p></div>
+                
+                <div class="stream-label abluft-label">ABLUFT</div>
+                <div class="state-node" id="node-ab-in"><h4>Eintritt</h4><p>T: <span id="res-t-ab-in">--</span>°C</p><p>rH: <span id="res-rh-ab-in">--</span>%</p><p>x: <span id="res-x-ab-in">--</span>g/kg</p><p>h: <span id="res-h-ab-in">--</span>kJ/kg</p></div>
+                <div class="arrow">→</div>
+                <div class="component-node" id="comp-adiabat"><h5>Adiabate Kühlung</h5><p>Wasser</p><p><strong id="res-w-adiabat">-- l/h</strong></p></div>
+                <div class="arrow">→</div>
+                <div class="state-node" id="node-ab-mid"><h4>n. Adiabatik</h4><p>T: <span id="res-t-ab-mid">--</span>°C</p><p>rH: <span id="res-rh-ab-mid">--</span>%</p><p>x: <span id="res-x-ab-mid">--</span>g/kg</p><p>h: <span id="res-h-ab-mid">--</span>kJ/kg</p></div>
+                 <div class="arrow">→</div>
+                 <div class="component-node" id="comp-wrg-ab"><h5>WRG</h5><p>Wärmeaufnahme</p><p><strong id="res-p-wrg-ab">-- kW</strong></p></div>
+                 <div class="arrow">→</div>
+                <div class="state-node" id="node-ab-out"><h4>Fortluft</h4><p>T: <span id="res-t-ab-out">--</span>°C</p><p>rH: <span id="res-rh-ab-out">--</span>%</p><p>x: <span id="res-x-ab-out">--</span>g/kg</p><p>h: <span id="res-h-ab-out">--</span>kJ/kg</p></div>
+            </div>
+        </div>
+    </main>
+    <footer class="footer"><p>Rechner für Adiabate Kühlung | Erstellt mit Gemini</p></footer>
+</div>
+<script src="script.js"></script>
+</body>
+</html>
