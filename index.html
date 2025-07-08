@@ -23,38 +23,18 @@
             <div class="grid-container config-grid">
                 <div>
                     <h4>🏭 Abluft (Eintritt)</h4>
-                    <div class="input-group">
-                        <label for="tempAbluft">Temperatur (°C)</label>
-                        <input type="number" id="tempAbluft" value="26.0" step="0.1">
-                    </div>
-                    <div class="input-group">
-                        <label for="rhAbluft">Relative Feuchte (%)</label>
-                        <input type="number" id="rhAbluft" value="50.0" step="0.1" min="0" max="100">
-                    </div>
+                    <div class="input-group"><label for="tempAbluft">Temperatur (°C)</label><input type="number" id="tempAbluft" value="26.0" step="0.1"></div>
+                    <div class="input-group"><label for="rhAbluft">Relative Feuchte (%)</label><input type="number" id="rhAbluft" value="50.0" step="0.1" min="0" max="100"></div>
                 </div>
-
                 <div>
                     <h4>☀️ Zuluft (Eintritt)</h4>
-                    <div class="input-group">
-                        <label for="tempZuluft">Temperatur (°C)</label>
-                        <input type="number" id="tempZuluft" value="32.0" step="0.1">
-                    </div>
-                    <div class="input-group">
-                        <label for="rhZuluft">Relative Feuchte (%)</label>
-                        <input type="number" id="rhZuluft" value="40.0" step="0.1" min="0" max="100">
-                    </div>
+                    <div class="input-group"><label for="tempZuluft">Temperatur (°C)</label><input type="number" id="tempZuluft" value="32.0" step="0.1"></div>
+                    <div class="input-group"><label for="rhZuluft">Relative Feuchte (%)</label><input type="number" id="rhZuluft" value="40.0" step="0.1" min="0" max="100"></div>
                 </div>
-
                 <div>
                     <h4>🔧 Systemparameter</h4>
-                    <div class="input-group">
-                        <label for="volumenstrom">Luft-Volumenstrom (m³/h)</label>
-                        <input type="number" id="volumenstrom" value="10000" step="100" min="0">
-                    </div>
-                    <div class="input-group">
-                        <label for="druck">Luftdruck (hPa)</label>
-                        <input type="number" id="druck" value="1013.25" step="0.1">
-                    </div>
+                    <div class="input-group"><label for="volumenstrom">Luft-Volumenstrom (m³/h)</label><input type="number" id="volumenstrom" value="10000" step="100" min="0"></div>
+                    <div class="input-group"><label for="druck">Luftdruck (hPa)</label><input type="number" id="druck" value="1013.25" step="0.1"></div>
                 </div>
             </div>
             <hr>
@@ -74,41 +54,51 @@
         
         <div class="card" id="results-card">
             <h2>Prozessvisualisierung & Ergebnisse</h2>
-            
             <div class="summary-results">
-                <div>
-                    <p>Erzeugte Kälteleistung</p>
-                    <strong id="summary-power">-- kW</strong>
-                </div>
-                <div>
-                    <p>Wasserverbrauch (Adiabatik)</p>
-                    <strong id="summary-water">-- l/h</strong>
-                </div>
-                <div>
-                    <p>Zuluft-Abkühlung</p>
-                    <strong id="summary-zuluft-delta-t">-- °C → -- °C</strong>
-                </div>
+                <div><p>Erzeugte Kälteleistung</p><strong id="summary-power">-- kW</strong></div>
+                <div><p>Wasserverbrauch (Adiabatik)</p><strong id="summary-water">-- l/h</strong></div>
+                <div><p>Zuluft-Abkühlung</p><strong id="summary-zuluft-delta-t">-- °C → -- °C</strong></div>
             </div>
             <hr>
 
-            <div class="process-grid">
-                <div class="stream-label zuluft-label">ZULUFT</div>
-                <div class="state-node" id="node-zu-in"><h4>Eintritt</h4><p>T: <span id="res-t-zu-in">--</span>°C</p><p>rH: <span id="res-rh-zu-in">--</span>%</p><p>x: <span id="res-x-zu-in">--</span>g/kg</p><p>h: <span id="res-h-zu-in">--</span>kJ/kg</p></div>
+            <div class="process-flow">
+                <div class="process-stage">
+                    <h3>1. Anfangszustände</h3>
+                    <div class="state-node" id="node-zu-in"><h4>Zuluft (Eintritt)</h4><p>T: <span id="res-t-zu-in">--</span>°C</p><p>rH: <span id="res-rh-zu-in">--</span>%</p><p>x: <span id="res-x-zu-in">--</span>g/kg</p></div>
+                    <div class="state-node" id="node-ab-in"><h4>Abluft (Eintritt)</h4><p>T: <span id="res-t-ab-in">--</span>°C</p><p>rH: <span id="res-rh-ab-in">--</span>%</p><p>x: <span id="res-x-ab-in">--</span>g/kg</p></div>
+                </div>
+
                 <div class="arrow">→</div>
-                <div class="component-node" id="comp-wrg-zu"><h5>WRG</h5><p>Kälteleistung</p><p><strong id="res-p-wrg">-- kW</strong></p></div>
+
+                <div class="process-stage">
+                    <h3>2. Adiabate Kühlung (Abluft)</h3>
+                    <div class="component-node" id="comp-adiabat">
+                        <h5>Adiabatik</h5>
+                        <p id="comp-t-ab">T: --°C ↘ --°C</p>
+                        <p>Wasser: <strong id="res-w-adiabat">-- l/h</strong></p>
+                    </div>
+                    <div class="state-node" id="node-ab-mid"><h4>Abluft (gekühlt)</h4><p>T: <span id="res-t-ab-mid">--</span>°C</p><p>rH: <span id="res-rh-ab-mid">--</span>%</p><p>x: <span id="res-x-ab-mid">--</span>g/kg</p></div>
+                </div>
+
                 <div class="arrow">→</div>
-                <div class="state-node final-state" id="node-zu-out"><h4>Austritt</h4><p>T: <span id="res-t-zu-out">--</span>°C</p><p>rH: <span id="res-rh-zu-out">--</span>%</p><p>x: <span id="res-x-zu-out">--</span>g/kg</p><p>h: <span id="res-h-zu-out">--</span>kJ/kg</p></div>
                 
-                <div class="stream-label abluft-label">ABLUFT</div>
-                <div class="state-node" id="node-ab-in"><h4>Eintritt</h4><p>T: <span id="res-t-ab-in">--</span>°C</p><p>rH: <span id="res-rh-ab-in">--</span>%</p><p>x: <span id="res-x-ab-in">--</span>g/kg</p><p>h: <span id="res-h-ab-in">--</span>kJ/kg</p></div>
+                <div class="process-stage">
+                    <h3>3. Wärmerückgewinnung (KVS)</h3>
+                    <div class="component-node wide" id="comp-wrg">
+                        <h5>Wärmeübertrager</h5>
+                        <p>Kälteleistung: <strong id="res-p-wrg">-- kW</strong></p>
+                        <p id="comp-t-zu">Zuluft T: --°C ↘ --°C</p>
+                        <p id="comp-t-wrg-ab">Abluft T: --°C ↗ --°C</p>
+                    </div>
+                </div>
+
                 <div class="arrow">→</div>
-                <div class="component-node" id="comp-adiabat"><h5>Adiabate Kühlung</h5><p>Wasser</p><p><strong id="res-w-adiabat">-- l/h</strong></p></div>
-                <div class="arrow">→</div>
-                <div class="state-node" id="node-ab-mid"><h4>n. Adiabatik</h4><p>T: <span id="res-t-ab-mid">--</span>°C</p><p>rH: <span id="res-rh-ab-mid">--</span>%</p><p>x: <span id="res-x-ab-mid">--</span>g/kg</p><p>h: <span id="res-h-ab-mid">--</span>kJ/kg</p></div>
-                 <div class="arrow">→</div>
-                 <div class="component-node" id="comp-wrg-ab"><h5>WRG</h5><p>Wärmeaufnahme</p><p><strong id="res-p-wrg-ab">-- kW</strong></p></div>
-                 <div class="arrow">→</div>
-                <div class="state-node" id="node-ab-out"><h4>Fortluft</h4><p>T: <span id="res-t-ab-out">--</span>°C</p><p>rH: <span id="res-rh-ab-out">--</span>%</p><p>x: <span id="res-x-ab-out">--</span>g/kg</p><p>h: <span id="res-h-ab-out">--</span>kJ/kg</p></div>
+
+                <div class="process-stage">
+                    <h3>4. Endzustände</h3>
+                    <div class="state-node final-state" id="node-zu-out"><h4>Zuluft (gekühlt)</h4><p>T: <span id="res-t-zu-out">--</span>°C</p><p>rH: <span id="res-rh-zu-out">--</span>%</p><p>x: <span id="res-x-zu-out">--</span>g/kg</p></div>
+                    <div class="state-node" id="node-ab-out"><h4>Fortluft</h4><p>T: <span id="res-t-ab-out">--</span>°C</p><p>rH: <span id="res-rh-ab-out">--</span>%</p><p>x: <span id="res-x-ab-out">--</span>g/kg</p></div>
+                </div>
             </div>
         </div>
     </main>
